@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Abhi — Kinetic Desk</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070a14; --fg:#eaf1ff; --muted:#9fb3d6;
+    --a:#7c4dff; --b:#00f0ff; --c:#00ff9a; --card:rgba(255,255,255,.04);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:radial-gradient(900px 480px at 10% 10%, rgba(124,77,255,.12), transparent),var(--bg);color:var(--fg);font-family:Inter,system-ui}
+
+  /* canvas background */
+  #flow{position:fixed;inset:0;z-index:-1;display:block}
+
+  /* header */
+  header{padding:28px 20px 12px;display:flex;justify-content:space-between;align-items:center}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;font-weight:800}
+  .title{font-weight:800;letter-spacing:.3px}
+  .subtitle{font-size:13px;color:var(--muted)}
+
+  /* dock */
+  .dock{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;gap:14px;background:rgba(2,6,23,.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.06);padding:10px 12px;border-radius:16px}
+  .dock button{width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));cursor:pointer;font-size:22px}
+
+  /* window cards */
+  .win{position:absolute;top:110px;left:60px;width:360px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.5);backdrop-filter:blur(10px);overflow:hidden}
+  .bar{display:flex;gap:8px;align-items:center;padding:10px;border-bottom:1px solid rgba(255,255,255,.06);user-select:none;cursor:grab}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .r{background:#ff5f56}.y{background:#ffbd2e}.g{background:#27c93f}
+  .wtitle{font-size:13px;color:var(--muted);margin-left:6px}
+  .wbody{padding:14px}
+
+  .cta{display:flex;gap:10px;margin-top:12px}
+  .btn{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));color:var(--fg);font-weight:600;cursor:pointer}
+  .btn.primary{background:linear-gradient(90deg,var(--a),var(--b));border:none;color:#041426}
+
+  /* terminal */
+  .term{font-family:"JetBrains Mono",monospace;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);height:160px;border-radius:12px;padding:10px;color:var(--muted);overflow:auto}
+
+  /* palette */
+  .palette{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.35)}
+  .palette .box{width:min(560px,94vw);background:rgba(8,12,24,.9);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px}
+  .palette input{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--fg);font-family:"JetBrains Mono",monospace}
+  .kbd{font-family:"JetBrains Mono",monospace;background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,.08)}
+
+  @media(max-width:900px){.win{width:92vw;left:4vw}}
+</style>
+</head>
+<body>
+<canvas id="flow"></canvas>
+<header>
+  <div class="brand">
+    <div class="logo">A</div>
+    <div>
+      <div class="title">Abhi</div>
+      <div class="subtitle">Kinetic Desk — clean, not cringe</div>
+    </div>
+  </div>
+  <div class="subtitle">Press <span class="kbd">Ctrl</span>+<span class="kbd">K</span> for palette · Press <span class="kbd">M</span> for confetti</div>
+</header>
+
+<!-- windows -->
+<div class="win" id="w-about" style="top:120px;left:60px">
+  <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="wtitle">About Abhi</span></div>
+  <div class="wbody">
+    <h2 style="margin:0 0 8px 0">Hi, I'm Abhi</h2>
+    <p style="color:var(--muted);margin:0">I build clean UI and playful interactions. This single file shows a flow‑field canvas, draggable glass windows, a command palette, and a tiny terminal — all minimal, but crispy.</p>
+    <div class="cta"><button class="btn primary" id="hire">Ping</button><button class="btn" id="theme">Swap Theme</button></div>
+  </div>
+</div>
+
+<div class="win" id="w-projects" style="top:160px;left:460px">
+  <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="wtitle">Projects</span></div>
+  <div class="wbody">
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+      <div style="background:var(--card);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.06)">
+        <div style="font-weight:600">Kinetic Canvas</div>
+        <div style="color:var(--muted);font-size:13px">Flow field + particles reacting to cursor.</div>
+      </div>
+      <div style="background:var(--card);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.06)">
+        <div style="font-weight:600">Glass Windows</div>
+        <div style="color:var(--muted);font-size:13px">Draggable, snappy, with subtle shadows.</div>
+      </div>
+      <div style="background:var(--card);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.06)">
+        <div style="font-weight:600">Command Palette</div>
+        <div style="color:var(--muted);font-size:13px">Quick actions via Ctrl+K.</div>
+      </div>
+      <div style="background:var(--card);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.06)">
+        <div style="font-weight:600">Tiny Terminal</div>
+        <div style="color:var(--muted);font-size:13px">Fake shell for fun demos.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="win" id="w-terminal" style="top:360px;left:60px;width:520px">
+  <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="wtitle">Terminal</span></div>
+  <div class="wbody">
+    <div class="term" id="term">abhi@desk:~$ _</div>
+  </div>
+</div>
+
+<!-- command palette -->
+<div class="palette" id="palette">
+  <div class="box">
+    <input id="palInput" placeholder="Type an action: theme, ping, confetti, about, projects, terminal"/>
+  </div>
+</div>
+
+<!-- Dock -->
+<div class="dock">
+  <button title="About" data-open="#w-about">👤</button>
+  <button title="Projects" data-open="#w-projects">📁</button>
+  <button title="Terminal" data-open="#w-terminal">⌨️</button>
+  <button title="Confetti" id="confetti">🎉</button>
+</div>
+
+<script>
+/********* Flow field background (fast + pretty) *********/
+const canvas = document.getElementById('flow');
+const ctx = canvas.getContext('2d');
+let W,H,DPR=Math.min(2,devicePixelRatio||1); function resize(){W=canvas.width=innerWidth*DPR;H=canvas.height=innerHeight*DPR;canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(DPR,0,0,DPR,0,0);} resize(); addEventListener('resize',resize);
+
+const particles=[]; const P=160; for(let i=0;i<P;i++){particles.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:0,vy:0});}
+let t=0; function field(x,y){const s=0.002; const a=Math.sin(x*s+t)+Math.cos(y*s-t); return {x:Math.cos(a), y:Math.sin(a)}; }
+let mx=innerWidth/2,my=innerHeight/2; addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+function step(){t+=0.004; ctx.fillStyle='rgba(7,10,20,0.09)'; ctx.fillRect(0,0,innerWidth,innerHeight); ctx.globalCompositeOperation='lighter';
+  for(const p of particles){ const f=field(p.x,p.y); p.vx+=f.x*0.3 + (mx-p.x)*0.00002; p.vy+=f.y*0.3 + (my-p.y)*0.00002; p.x+=p.vx; p.y+=p.vy; p.vx*=0.94; p.vy*=0.94; if(p.x<0)p.x+=innerWidth; if(p.x>innerWidth)p.x-=innerWidth; if(p.y<0)p.y+=innerHeight; if(p.y>innerHeight)p.y-=innerHeight; const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,14); g.addColorStop(0,'rgba(255,255,255,.10)'); g.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,14,0,Math.PI*2); ctx.fill(); }
+  ctx.globalCompositeOperation='source-over'; requestAnimationFrame(step); }
+step();
+
+/********* Draggable windows *********/
+function makeDrag(win){ const bar=win.querySelector('.bar'); let sx=0,sy=0,ox=0,oy=0,drag=false; bar.addEventListener('pointerdown',e=>{drag=true; bar.setPointerCapture(e.pointerId); sx=e.clientX; sy=e.clientY; const r=win.getBoundingClientRect(); ox=r.left; oy=r.top; bar.style.cursor='grabbing';}); bar.addEventListener('pointermove',e=>{ if(!drag) return; const nx=ox+(e.clientX-sx); const ny=oy+(e.clientY-sy); win.style.left=Math.max(6,Math.min(innerWidth-win.offsetWidth-6,nx))+'px'; win.style.top=Math.max(90,Math.min(innerHeight-60,ny))+'px'; }); bar.addEventListener('pointerup',()=>{drag=false; bar.style.cursor='grab';}); }
+['w-about','w-projects','w-terminal'].forEach(id=>makeDrag(document.getElementById(id)));
+
+/********* Dock open *********/
+for(const b of document.querySelectorAll('.dock button[data-open]')){ b.addEventListener('click',()=>{ const sel=b.getAttribute('data-open'); document.querySelector(sel).style.display='block'; }); }
+
+/********* Terminal *********/
+const term=document.getElementById('term');
+function sh(x){ term.textContent += "\n"+x; term.scrollTop=term.scrollHeight; }
+sh('Type: echo hello | help | clear');
+addEventListener('keydown',e=>{ if(e.key==='Enter'){ const cmd = prompt('terminal command','echo hello'); if(!cmd) return; if(cmd.startsWith('echo')) sh(cmd.replace(/echo\s+/,'')); else if(cmd==='help') sh('commands: echo, clear, help'); else if(cmd==='clear') term.textContent='abhi@desk:~$ _'; else sh('command not found'); }});
+
+/********* Palette (Ctrl+K) *********/
+const pal=document.getElementById('palette'); const palInput=document.getElementById('palInput');
+addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){ pal.style.display='grid'; setTimeout(()=>palInput.focus(),10); e.preventDefault(); }});
+palInput.addEventListener('keydown',e=>{ if(e.key==='Escape'){ pal.style.display='none'; } if(e.key==='Enter'){ const v=palInput.value.trim().toLowerCase(); pal.style.display='none'; palInput.value=''; if(v.includes('theme')) swapTheme(); else if(v.includes('confetti')) confetti(); else if(v.includes('about')) document.getElementById('w-about').style.display='block'; else if(v.includes('projects')) document.getElementById('w-projects').style.display='block'; else if(v.includes('terminal')) document.getElementById('w-terminal').style.display='block'; else alert('No action for: '+v); }});
+pal.addEventListener('click',e=>{ if(e.target===pal) pal.style.display='none'; });
+
+/********* Actions *********/
+document.getElementById('confetti').onclick = confetti;
+document.getElementById('hire').onclick = ()=>alert('Pinged — nice to meet you, mam!');
+document.getElementById('theme').onclick = swapTheme;
+
+function swapTheme(){ const dark=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()==='#070a14'; if(dark){ document.documentElement.style.setProperty('--bg','#f8fbff'); document.documentElement.style.setProperty('--fg','#0b1220'); document.documentElement.style.setProperty('--muted','#4b5b78'); }
+  else{ document.documentElement.style.setProperty('--bg','#070a14'); document.documentElement.style.setProperty('--fg','#eaf1ff'); document.documentElement.style.setProperty('--muted','#9fb3d6'); }}
+
+/********* Confetti (simple) *********/
+function confetti(){ const cx=innerWidth/2, cy=innerHeight-90; const burst=[]; for(let i=0;i<160;i++){ const a=Math.random()*Math.PI*2; const s=2+Math.random()*8; burst.push({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,r:2+Math.random()*4,c: i%3===0? '#7c4dff' : (i%3===1? '#00f0ff':'#00ff9a'),life:100}); }
+  (function spin(){ ctx.save(); for(let i=burst.length-1;i>=0;i--){ const p=burst[i]; p.vy+=0.12; p.x+=p.vx; p.y+=p.vy; p.life--; ctx.fillStyle=p.c; ctx.beginPath(); ctx.ellipse(p.x,p.y,p.r,p.r*1.6,0,0,Math.PI*2); ctx.fill(); if(p.life<=0) burst.splice(i,1); } ctx.restore(); if(burst.length) requestAnimationFrame(spin); })(); }
+addEventListener('keydown',e=>{ if(e.key.toLowerCase()==='m') confetti(); });
+</script>
+</body>
+</html>

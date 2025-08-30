@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NEON DRIFT — Promo</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    /* -----------------------------
+       RESET
+       ----------------------------- */
+    :root{
+      --bg-1: #0f1022;
+      --bg-2: #0b1226;
+      --accent-1: #8b5cf6; /* purple */
+      --accent-2: #06b6d4; /* teal */
+      --accent-3: #f97316; /* orange */
+      --glass: rgba(255,255,255,0.06);
+      --glass-2: rgba(255,255,255,0.03);
+      --card-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body,#app{height:100%}
+    body{
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(139,92,246,0.10), transparent),
+                  radial-gradient(900px 400px at 90% 90%, rgba(6,182,212,0.06), transparent),
+                  linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      color:#e8eefc;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:48px;
+    }
+
+    /* -----------------------------
+       MAIN WRAPPER
+       ----------------------------- */
+    .promo-wrap{
+      max-width:1200px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:28px;
+      align-items:start;
+    }
+
+    /* -----------------------------
+       HERO / LEFT
+       ----------------------------- */
+    .hero{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:20px;
+      padding:28px;
+      box-shadow: var(--card-shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* decorative grid lines for vibe */
+    .hero::before{
+      content:"";
+      position:absolute;inset:0;pointer-events:none;
+      background-image: linear-gradient(transparent 0 26px, rgba(255,255,255,0.01) 26px), linear-gradient(90deg, transparent 0 26px, rgba(255,255,255,0.01) 26px);
+      mix-blend-mode:overlay;opacity:0.7;
+    }
+
+    .brand {
+      display:flex;gap:16px;align-items:center;margin-bottom:18px;
+    }
+    .logo{
+      width:72px;height:72px;border-radius:14px;display:grid;place-items:center;
+      background: linear-gradient(135deg,var(--accent-1),var(--accent-2));
+      box-shadow: 0 6px 18px rgba(139,92,246,0.18), inset 0 -6px 18px rgba(255,255,255,0.03);
+      font-family: 'Space Grotesk', sans-serif;font-weight:700;font-size:18px;color:white;
+    }
+    .brand h1{font-family:'Space Grotesk';font-size:26px;letter-spacing:0.6px;margin:0}
+    .brand p{opacity:0.8;font-size:13px}
+
+    .headline{font-size:40px;line-height:1.02;margin:8px 0 14px;font-weight:800;letter-spacing:-1px}
+    .subtitle{color:rgba(255,255,255,0.75);font-size:15px;margin-bottom:20px}
+
+    /* CTA buttons */
+    .cta-row{display:flex;gap:12px;margin-bottom:20px}
+    .btn{
+      background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.06);
+      padding:12px 18px;border-radius:12px;font-weight:700;font-size:14px;
+      cursor:pointer;backdrop-filter: blur(6px);
+      transition:transform .22s ease, box-shadow .22s ease;
+    }
+    .btn:active{transform:translateY(2px)}
+    .btn.primary{
+      background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+      color:#031028;border:none;box-shadow: 0 10px 30px rgba(6,182,212,0.12);
+    }
+
+    /* long text area with fancy edges */
+    .pitch{
+      font-size:14px;line-height:1.6;color:rgba(232,238,252,0.93);padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      border:1px solid rgba(255,255,255,0.03);box-shadow: inset 0 2px 12px rgba(255,255,255,0.01);
+      margin-bottom:18px;max-height:360px;overflow:auto
+    }
+
+    /* make the code long: a long list of badges / features */
+    .features{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .chip{padding:8px 12px;border-radius:999px;font-weight:700;font-size:12px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));border:1px solid rgba(255,255,255,0.03)}
+
+    /* -----------------------------
+       RIGHT PANEL: PREVIEW CARDS
+       including the left->right dim overlay on hover
+       ----------------------------- */
+    .right-panel{
+      position:relative;display:flex;flex-direction:column;gap:18px;
+    }
+
+    .card{
+      border-radius:16px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:var(--card-shadow);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.03);
+    }
+
+    /* THE HOVER DIM ANIMATION (left-to-right) */
+    /* We'll use a pseudo-element that slides across when parent has .hoverable:hover */
+    .hoverable{--overlay-x:-110%;position:relative}
+    .hoverable::after{
+      content:"";position:absolute;inset:0;z-index:4;pointer-events:none;
+      background: linear-gradient(90deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.18) 30%, rgba(0,0,0,0.28) 60%, rgba(0,0,0,0.6) 100%);
+      transform:translateX(var(--overlay-x));transition:transform 750ms cubic-bezier(.18,.9,.3,1), opacity 420ms ease;
+      opacity:0;mix-blend-mode:multiply;
+    }
+    .hoverable:hover::after{--overlay-x:110%;opacity:1}
+
+    /* give each card a slightly different feel */
+    .card.preview{height:200px;display:flex;flex-direction:column;justify-content:space-between}
+    .preview .top{display:flex;justify-content:space-between;align-items:center}
+    .preview h3{font-family:'Space Grotesk';font-size:18px}
+    .preview p{font-size:13px;color:rgba(232,238,252,0.85)}
+
+    /* progress bar (fancy) */
+    .progress{
+      height:10px;border-radius:999px;background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));overflow:hidden;margin-top:10px
+    }
+    .progress > i{display:block;height:100%;width:62%;border-radius:999px;background:linear-gradient(90deg,var(--accent-2),var(--accent-1));transform-origin:left center;transition:width 700ms cubic-bezier(.2,.9,.35,1)}
+
+    /* small code-like footer */
+    .meta{font-family:monospace;font-size:12px;color:rgba(200,210,230,0.65);opacity:0.95}
+
+    /* gallery: grid of tiny cards with hover dim */
+    .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .mini{
+      height:110px;border-radius:12px;padding:12px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.03);
+      display:flex;flex-direction:column;justify-content:space-between
+    }
+    .mini .tag{font-size:11px;font-weight:700}
+
+    /* -----------------------------
+       FOOTER LONG REVEAL PANEL (lots of design noise to lengthen code)
+       ----------------------------- */
+    .reveal{
+      margin-top:22px;padding:16px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.006));border:1px solid rgba(255,255,255,0.02);
+    }
+    .reveal .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .glow-pill{padding:8px 12px;border-radius:999px;background:linear-gradient(90deg, rgba(139,92,246,0.12), rgba(6,182,212,0.08));font-weight:700}
+
+    /* fancy floating blobs using pseudo elements to make it long */
+    .hero .blob, .right-panel .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.22;pointer-events:none}
+    .hero .blob{width:420px;height:420px;right:-100px;top:-120px;background:linear-gradient(135deg,var(--accent-1),var(--accent-3))}
+    .right-panel .blob{width:320px;height:320px;left:-110px;bottom:-80px;background:linear-gradient(135deg,var(--accent-2),var(--accent-1))}
+
+    /* responsive tweaks */
+    @media (max-width:1100px){
+      .promo-wrap{grid-template-columns:1fr;}
+      .right-panel{order:2}
+    }
+
+    /* little utility classes to make it longer */
+    .muted{opacity:0.78;font-size:13px}
+    .spacer{height:6px}
+
+    /* extra: animated squiggle under headline */
+    .squiggle{height:14px;display:block;margin-top:6px}
+
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="promo-wrap">
+
+      <!-- LEFT: HERO / CONTENT -->
+      <section class="hero">
+        <div class="brand">
+          <div class="logo">ND</div>
+          <div>
+            <h1>NEON DRIFT</h1>
+            <p>crafted promo · 1-of-1 experimental landing — long, loud & detailed</p>
+          </div>
+        </div>
+
+        <h2 class="headline">Make it loud. Make it move. Make it feel.</h2>
+        <svg class="squiggle" viewBox="0 0 220 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 8C28 0 58 18 88 8C118 -2 148 18 178 8C208 -2 220 8 220 8" stroke="rgba(139,92,246,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <p class="subtitle">A single-file splash with glassy layers, slow-motion dim on hover, and a palette that screams 'late-night neon lab'.</p>
+
+        <div class="cta-row">
+          <button class="btn primary">Launch Experience</button>
+          <button class="btn">Download Assets</button>
+          <button class="btn">Get CSS</button>
+        </div>
+
+        <div class="pitch">
+          <p>
+            This promo contains a long, intentionally detailed style system and UI playground: gradients, glass panels, micro-interactions and an overlay that dims from left → right on hover. Use it as a concept page or a prototype to copy from.
+          </p>
+
+          <div class="spacer"></div>
+
+          <p class="muted">
+            Features included: subtle grain (via gradients), layered blobs, grid lines, glass buttons, progress previews, microcopy, hooded cards and multiple hover states. The code is verbose on purpose — expand, hack, remix.
+          </p>
+
+          <div class="features" aria-hidden="true">
+            <span class="chip">glassmorphism</span>
+            <span class="chip">neon gradients</span>
+            <span class="chip">left→right overlay</span>
+            <span class="chip">SVG accents</span>
+            <span class="chip">progress bars</span>
+            <span class="chip">responsive</span>
+            <span class="chip">keyboard friendly</span>
+            <span class="chip">long source</span>
+            <span class="chip">customizable</span>
+            <span class="chip">performance-minded</span>
+            <span class="chip">copy-friendly</span>
+          </div>
+        </div>
+
+        <!-- multiple callouts to make code longer -->
+        <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+          <div class="glow-pill">Prototype • v0.9</div>
+          <div class="glow-pill">Made for show</div>
+          <div class="glow-pill">Touch-friendly</div>
+          <div class="glow-pill">Exportable CSS</div>
+        </div>
+
+        <div class="blob"></div>
+      </section>
+
+      <!-- RIGHT: Preview Cards -->
+      <aside class="right-panel">
+
+        <div class="card preview hoverable" tabindex="0" role="article" aria-label="Preview panel">
+          <div class="top">
+            <div>
+              <h3>Visual Intensity</h3>
+              <p class="muted">Slide across to dim the card and preview focus states.</p>
+            </div>
+            <div class="meta">• v0.9-alpha</div>
+          </div>
+
+          <div>
+            <div class="progress" aria-hidden="true"><i></i></div>
+            <p style="margin-top:10px;font-size:13px;color:rgba(232,238,252,0.75)">Progressive color ramping with interactive overlay and animation curves tuned for smoothness.</p>
+          </div>
+        </div>
+
+        <div class="card gallery">
+          <div class="mini hoverable" tabindex="0">
+            <div class="tag">Pulse</div>
+            <div class="meta">heart • reactive</div>
+          </div>
+          <div class="mini hoverable" tabindex="0">
+            <div class="tag">Wave</div>
+            <div class="meta">flow • soft</div>
+          </div>
+          <div class="mini hoverable" tabindex="0">
+            <div class="tag">Spark</div>
+            <div class="meta">flash • quick</div>
+          </div>
+          <div class="mini hoverable" tabindex="0">
+            <div class="tag">Calm</div>
+            <div class="meta">dim • low</div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="row">
+            <div style="flex:1">
+              <strong>Deep Notes</strong>
+              <p class="muted" style="margin-top:6px">The overlay is pure CSS: a pseudo element (::after) sliding horizontally on :hover. That keeps perf high and keeps JS optional.</p>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="glow-pill">no deps</div>
+              <div class="glow-pill">pure CSS</div>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="row">
+            <div style="flex-basis:60%">
+              <div style="font-size:13px;line-height:1.6;color:rgba(200,210,230,0.9)">
+                Long copy section — paste your marketing text here. The container is scrollable and will maintain the overlay when hovered.
+              </div>
+            </div>
+            <div style="flex:1;text-align:right">
+              <button class="btn">Try Theme</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="blob"></div>
+      </aside>
+
+    </div>
+
+    <!-- Extra long footer to make the file heavier: examples, code snippets, and a tiny script -->
+    <section style="max-width:1200px;margin:24px auto 0;">
+      <div style="background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,0.02);box-shadow:var(--card-shadow)">
+        <h3 style="font-family:'Space Grotesk';margin-bottom:12px">Examples & copy</h3>
+        <p class="muted">Copy these snippets into your project to re-create the left→right dim effect on any card-like element:</p>
+
+        <pre style="background:rgba(2,6,23,0.45);padding:12px;border-radius:8px;margin-top:12px;overflow:auto;font-family:monospace;color:#dfe8ff;font-size:13px">
+/* Add this to the element */
+.element{position:relative}
+.element::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.6) 100%);
+  transform:translateX(-110%);transition:transform .7s cubic-bezier(.18,.9,.3,1),opacity .3s;
+}
+.element:hover::after{transform:translateX(110%);opacity:1}
+        </pre>
+
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+          <div class="chip">copy-paste</div>
+          <div class="chip">tweakable</div>
+          <div class="chip">accessible</div>
+          <div class="chip">keyboard</div>
+          <div class="chip">aria-friendly</div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // small enhancements to increase perceived length and add micro interactions
+    (function(){
+      // keyboard focus for hoverable elements: press space/enter to toggle overlay for demo
+      document.querySelectorAll('.hoverable').forEach(function(el){
+        el.addEventListener('keydown', function(e){
+          if(e.key===' '||e.key==='Enter'){
+            e.preventDefault();
+            el.classList.toggle('forced');
+            // toggling css variable to simulate hover
+            if(el.classList.contains('forced')){
+              el.style.setProperty('--overlay-x','110%');
+              el.style.setProperty('opacity','1');
+            } else {
+              el.style.setProperty('--overlay-x','-110%');
+              el.style.removeProperty('opacity');
+            }
+          }
+        });
+      });
+
+      // a small flourish: heartbeat animation to progress bar width
+      var bar = document.querySelector('.progress > i');
+      if(bar){
+        var width = 62;
+        setInterval(function(){
+          width = 40 + Math.round(40*Math.random());
+          bar.style.width = width + '%';
+        },2200);
+      }
+
+      // reduce motion respects
+      try{
+        var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if(mq.matches){
+          document.documentElement.style.setProperty('transition-duration','0ms');
+        }
+      }catch(e){}
+    })();
+  </script>
+</body>
+</html>

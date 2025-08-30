@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HyperShowcase idk</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050510; --fg:#EAF4FF; --muted:#9fb3d6;
+    --p1:#ff4dd2; --p2:#00f0ff; --p3:#00ff9a;
+    --card: rgba(255,255,255,.04);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; background:linear-gradient(180deg,#030413 0%, #071022 60%); color:var(--fg);
+    font-family:"Space Grotesk",system-ui,Segoe UI,Roboto,Arial;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* HERO */
+  .hero{height:100vh;display:grid;place-items:center;text-align:center;padding:28px}
+  h1{
+    font-family:"Orbitron",sans-serif;font-size:clamp(40px,10vw,96px);
+    background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 12px 30px rgba(0,0,0,.7));
+    margin:0;
+  }
+  p.lead{color:var(--muted);max-width:900px;margin:14px auto 0;font-size:18px}
+
+  .cta{margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{
+    padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
+    color:var(--fg);font-weight:700;cursor:pointer;position:relative;overflow:hidden;
+  }
+  .btn--neon{background:linear-gradient(90deg,var(--p1),var(--p2));color:#041426;border:none}
+
+  /* Waves background */
+  #waves{position:fixed;inset:0;pointer-events:none;z-index:-2;overflow:hidden}
+  .w{position:absolute;border-radius:50%;filter:blur(140px);mix-blend-mode:screen;opacity:.22}
+  .w.a{width:80vmax;height:80vmax;left:-20vmax;top:-30vmax;background:conic-gradient(from 90deg,var(--p1),var(--p2),var(--p3))}
+  .w.b{width:60vmax;height:60vmax;right:-18vmax;bottom:-20vmax;background:conic-gradient(from 200deg,var(--p2),var(--p3),var(--p1));opacity:.16}
+
+  /* Grid sections */
+  section{padding:64px 20px}
+  .wrap{max-width:1200px;margin:0 auto}
+  h2{font-size:32px;margin:0 0 22px;text-align:center}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+
+  .card{
+    background:var(--card);border-radius:16px;padding:18px;border:1px solid rgba(255,255,255,.04);
+    transform-style:preserve-3d;transition:transform .22s ease,box-shadow .22s ease;
+  }
+  .card:hover{transform:translateY(-8px) rotateX(6deg) rotateY(6deg);box-shadow:0 40px 80px rgba(0,0,0,.6)}
+
+  /* preview area */
+  .preview{height:420px;border-radius:14px;overflow:hidden;position:relative;background:linear-gradient(180deg,rgba(255,255,255,.01),transparent)}
+  .preview canvas{position:absolute;inset:0;z-index:0}
+  .preview iframe{position:absolute;inset:12px;border-radius:10px;border:none;z-index:2;background:transparent}
+
+  /* tiny terminal */
+  #term{background:rgba(0,0,0,.28);padding:12px;border-radius:10px;color:var(--muted);font-family:JetBrains Mono,monospace;height:140px;overflow:auto}
+
+  footer{text-align:center;padding:40px;color:var(--muted)}
+
+  /* custom cursor */
+  .ring{position:fixed;left:0;top:0;width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,240,255,.9);pointer-events:none;z-index:999;transform:translate(-50%,-50%);mix-blend-mode:screen}
+
+  @media (max-width:900px){ .preview{height:320px} h1{font-size:48px} }
+</style>
+</head>
+<body>
+
+<div id="waves"><div class="w a"></div><div class="w b"></div></div>
+<div class="ring" id="ring"></div>
+
+<header class="hero">
+  <h1>Random cool project</h1>
+  <p class="lead">Clean, fixed, and loaded with micro-interactions: canvas particles, preview iframe playground, confetti (press <strong>M</strong>), mic visualizer, 3D cube, and Konami easter-egg.</p>
+  <div class="cta">
+    <button class="btn btn--neon" id="loadDemo">Load Demo</button>
+    <button class="btn" id="confettiBtn">Throw Confetti (M)</button>
+  </div>
+</header>
+
+<section id="demo" class="wrap">
+  <h2>Live Playground</h2>
+  <div style="display:grid;grid-template-columns:1fr 460px;gap:18px;align-items:start">
+    <div class="card">
+      <strong>Edit & Inject</strong>
+      <p style="color:var(--muted);margin:6px 0 12px">Write a tiny HTML snippet below and hit <em>Inject into preview</em> to see it run inside a sandboxed iframe.</p>
+      <textarea id="code" style="width:100%;height:220px;border-radius:10px;padding:10px;font-family:JetBrains Mono,monospace;background:rgba(0,0,0,.32);color:var(--fg);border:1px solid rgba(255,255,255,.04)"><!doctype html>
+<html>
+  <body style="margin:0;height:100vh;display:grid;place-items:center;background:linear-gradient(120deg,#021426,#04102a);">
+    <h1 style="color:white;font-family:system-ui">Hi Mam — demo loaded 😎</h1>
+  </body>
+</html></textarea>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="btn btn--neon" id="inject">Inject into preview</button>
+        <button class="btn" id="download">Download</button>
+        <div style="flex:1"></div>
+        <div style="color:var(--muted);align-self:center">Size: <span id="size">0</span> bytes</div>
+      </div>
+    </div>
+
+    <aside class="card preview">
+      <canvas id="bgCanvas"></canvas>
+      <iframe id="preview" sandbox="allow-scripts allow-modals"></iframe>
+      <div style="position:absolute;right:12px;bottom:12px;display:flex;gap:8px;z-index:6">
+        <button class="btn" id="snapshot">Save PNG</button>
+        <button class="btn" id="fullscreen">Full</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Extras</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>3D Cube</h3>
+      <div style="height:160px;display:grid;place-items:center">
+        <div id="cube" style="width:110px;height:110px;transform-style:preserve-3d;transition:transform .18s">
+          <div style="position:relative;width:110px;height:110px;border-radius:10px;background:rgba(255,255,255,.02);display:grid;place-items:center;border:1px solid rgba(255,255,255,.04)">HTML</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Tiny Terminal</h3>
+      <div id="term">Ready. Click to run a fake command (try <code>echo Wow Mam</code>).</div>
+    </div>
+
+    <div class="card">
+      <h3>Konami → Rainbow</h3>
+      <p style="color:var(--muted)">Type: ↑ ↑ ↓ ↓ ← → ← → B A to toggle rainbow rave mode. Press <strong>M</strong> for confetti.</p>
+    </div>
+  </div>
+</section>
+
+<footer>Made by you. Show mam and flex. Want your name/logo added? I’ll paste it in instantly.</footer>
+
+<script>
+/* ---------- small helpers ---------- */
+const codeEl = document.getElementById('code');
+const preview = document.getElementById('preview');
+const sizeEl = document.getElementById('size');
+function updateSize(){ sizeEl.textContent = new Blob([codeEl.value]).size; }
+updateSize(); codeEl.addEventListener('input', updateSize);
+function inject(){ const html = codeEl.value; const doc = preview.contentWindow.document; doc.open(); doc.write(html); doc.close(); }
+
+/* inject/download */
+document.getElementById('inject').onclick = inject;
+document.getElementById('download').onclick = () => {
+  const a = document.createElement('a');
+  const blob = new Blob([codeEl.value], {type:'text/html'});
+  a.href = URL.createObjectURL(blob);
+  a.download = 'hyper-demo.html';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+};
+document.getElementById('loadDemo').onclick = () => { inject(); };
+
+/* ---------- canvas background particles / glow ---------- */
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let W = innerWidth, H = innerHeight;
+function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; canvas.style.width = innerWidth+'px'; canvas.style.height = innerHeight+'px'; }
+window.addEventListener('resize', resize); resize();
+
+let blobs = [];
+function initBlobs(n=60){ blobs = []; for(let i=0;i<n;i++){ blobs.push({x:Math.random()*W, y:Math.random()*H, r:20+Math.random()*60, vx:(Math.random()-0.5)*0.7, vy:(Math.random()-0.5)*0.7}) } }
+initBlobs(70);
+
+function step(){
+  ctx.clearRect(0,0,W,H);
+  // faint gradient background
+  const g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'rgba(2,6,20,0.6)');
+  g.addColorStop(1,'rgba(4,10,26,0.6)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  // draw blobs (soft)
+  ctx.globalCompositeOperation = 'lighter';
+  for(const b of blobs){
+    b.x += b.vx; b.y += b.vy;
+    if(b.x < -100) b.x = W+100; if(b.x > W+100) b.x = -100;
+    if(b.y < -100) b.y = H+100; if(b.y > H+100) b.y = -100;
+    const rad = b.r;
+    const grad = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,rad*2);
+    grad.addColorStop(0,'rgba(255,255,255,0.06)');
+    grad.addColorStop(0.3,'rgba(255,255,255,0.015)');
+    grad.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(b.x,b.y,rad*1.6,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(step);
+}
+step();
+
+/* ---------- confetti ---------- */
+let confetti = [];
+function doConfetti(){
+  const cx = W/2, cy = H/2;
+  for(let i=0;i<160;i++){
+    const a = Math.random()*Math.PI*2;
+    const s = 2 + Math.random()*8;
+    confetti.push({x:cx, y:cy, vx:Math.cos(a)*s, vy:Math.sin(a)*s-3, r:2+Math.random()*6, c: i%2? '#ff4dd2' : '#00f0ff', life:90+Math.random()*60});
+  }
+  animateConfetti();
+}
+function animateConfetti(){
+  if(confetti.length===0) return;
+  for(let i=confetti.length-1;i>=0;i--){
+    const p = confetti[i];
+    p.vy += 0.12; p.x += p.vx; p.y += p.vy; p.life--;
+    ctx.fillStyle = p.c;
+    ctx.beginPath(); ctx.ellipse(p.x,p.y,p.r,p.r*1.6,0,0,Math.PI*2); ctx.fill();
+    if(p.life<=0) confetti.splice(i,1);
+  }
+  requestAnimationFrame(animateConfetti);
+}
+document.getElementById('confettiBtn').onclick = doConfetti;
+document.addEventListener('keydown', e => { if(e.key.toLowerCase()==='m') doConfetti(); });
+
+/* ---------- mic visualizer (simple) ---------- */
+let audioCtx = null, analyser = null, dataArr = null;
+async function toggleMic(btn){
+  if(audioCtx){ await audioCtx.close(); audioCtx = null; btn.textContent = 'Mic Viz'; return; }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser(); analyser.fftSize = 256;
+    src.connect(analyser); dataArr = new Uint8Array(analyser.frequencyBinCount);
+    btn.textContent = 'Stop Mic';
+    (function viz(){
+      if(!analyser) return;
+      analyser.getByteFrequencyData(dataArr);
+      // small overlay bars near bottom
+      ctx.save(); ctx.translate(20, H-80);
+      for(let i=0;i<40;i++){
+        const v = dataArr[i] / 255;
+        const h = v*60;
+        ctx.fillStyle = `rgba(255,255,255,${0.02 + v*0.9})`;
+        ctx.fillRect(i*(6+3), -h, 6, h);
+      }
+      ctx.restore();
+      requestAnimationFrame(viz);
+    })();
+  }catch(err){
+    alert('Mic access denied or not available.');
+  }
+}
+document.getElementById('loadDemo').addEventListener('click', ()=> toggleMic(document.getElementById('loadDemo')));
+
+/* ---------- iframe injection safety ---------- */
+function safeInject(html){
+  try{ inject(); }catch(e){ alert('Preview failed to load.'); }
+}
+
+/* ---------- snapshot ---------- */
+document.getElementById('snapshot').onclick = ()=>{
+  const tmp = document.createElement('canvas'); tmp.width = W; tmp.height = H; tmp.getContext('2d').drawImage(canvas,0,0);
+  const a = document.createElement('a'); a.href = tmp.toDataURL('image/png'); a.download = 'hypershot.png'; a.click();
+};
+
+/* ---------- fullscreen ---------- */
+document.getElementById('fullscreen').onclick = ()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+};
+
+/* ---------- tiny terminal ---------- */
+const term = document.getElementById('term');
+term.addEventListener('click', ()=>{
+  const cmd = prompt('Run command','echo "Wow Mam"');
+  if(!cmd) return;
+  if(cmd.startsWith('echo')) term.textContent += '\n> ' + cmd + '\n' + cmd.replace(/echo\s+["']?|"?/g,'');
+  else term.textContent += '\n> ' + cmd + '\ncommand not found';
+  term.scrollTop = term.scrollHeight;
+});
+
+/* ---------- cube micro-interaction ---------- */
+const cube = document.getElementById('cube');
+document.addEventListener('mousemove', e=>{
+  const cx = innerWidth/2, cy = innerHeight/2;
+  const dx = (e.clientX - cx) / cx;
+  const dy = (e.clientY - cy) / cy;
+  cube.style.transform = `rotateX(${dy*10}deg) rotateY(${dx*18}deg)`;
+  document.getElementById('ring').style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+});
+
+/* ---------- Konami (easter egg) ---------- */
+let keys = [];
+const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+window.addEventListener('keydown', e=>{
+  keys.push(e.key);
+  if(keys.length > KONAMI.length) keys.shift();
+  if(KONAMI.every((k,i)=>k.toLowerCase() === (keys[i]||'').toLowerCase())){
+    document.body.classList.toggle('rave');
+    // quick visual cue
+    document.body.animate([{filter:'hue-rotate(0deg)'},{filter:'hue-rotate(360deg)'}],{duration:2000});
+    doConfetti();
+  }
+});
+
+/* ---------- small perf FPS to the size field ---------- */
+let frames = 0, last = performance.now();
+(function fps(){
+  frames++;
+  const now = performance.now();
+  if(now - last >= 1000){
+    document.getElementById('size').textContent = frames + ' fps';
+    frames = 0; last = now;
+  }
+  requestAnimationFrame(fps);
+})();
+</script>
+
+</body>
+</html>

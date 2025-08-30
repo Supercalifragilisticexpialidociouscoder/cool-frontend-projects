@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HyperShowcase — Crazy HTML/CSS/JS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0b0f1a;         /* base background */
+      --fg: #E6EDF3;         /* text */
+      --muted:#91A4B7;       /* secondary */
+      --pri: #7c4dff;        /* primary neon */
+      --sec: #00e5ff;        /* secondary neon */
+      --card: rgba(255,255,255,.06);
+      --glass: rgba(255,255,255,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 22px;
+      --border: 1px solid rgba(255,255,255,.16);
+      --glow: drop-shadow(0 0 16px rgba(124,77,255,.45)) drop-shadow(0 0 42px rgba(0,229,255,.25));
+    }
+    [data-theme="light"]{
+      --bg: #F5FAFF;
+      --fg: #0b1220;
+      --muted:#4e5d71;
+      --card: rgba(0,0,0,.04);
+      --glass: rgba(255,255,255,.85);
+      --border: 1px solid rgba(0,0,0,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.15);
+      --glow: drop-shadow(0 0 12px rgba(124,77,255,.35)) drop-shadow(0 0 28px rgba(0,229,255,.20));
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font-family:"Space Grotesk",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      line-height:1.35;
+      overflow-x:hidden;
+    }
+
+    /* Animated gradient halo */
+    .bg-grad{
+      position:fixed; inset:-20vmax; z-index:-2; filter:blur(70px) saturate(130%);
+      background: conic-gradient(from 0turn, var(--pri), var(--sec), #12ffa1, var(--pri));
+      animation: spin 24s linear infinite;
+      opacity:.28; pointer-events:none;
+    }
+    @keyframes spin{to{transform:rotate(1turn)}}
+
+    /* Starfield canvas */
+    canvas#stars{position:fixed; inset:0; z-index:-1; opacity:.35}
+
+    /* Navbar */
+    .nav{
+      position:fixed; top:18px; left:50%; transform:translateX(-50%);
+      display:flex; gap:10px; align-items:center; padding:10px 14px;
+      background:var(--glass); border:var(--border);
+      box-shadow:var(--shadow); backdrop-filter: blur(12px) saturate(150%);
+      border-radius: 999px;
+    }
+    .nav a, .nav button{
+      text-decoration:none; color:var(--fg); border:var(--border);
+      padding:10px 14px; border-radius:999px; background:var(--card);
+      font-weight:600; letter-spacing:.3px; cursor:pointer;
+      transition: transform .12s ease, background .3s ease, box-shadow .2s ease;
+    }
+    .nav a:hover, .nav button:hover{ transform: translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,.25)}
+
+    /* Hero */
+    header{
+      min-height:100svh; display:grid; place-items:center; text-align:center; position:relative;
+      padding:120px 20px 60px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
+      border:var(--border); background:var(--card); box-shadow:var(--shadow);
+      font-size:14px; color:var(--muted);
+    }
+    .title{
+      margin:18px 0 8px; font-size: clamp(40px, 7vw, 108px); font-weight:800; line-height:.95;
+      background: linear-gradient(90deg, var(--pri), var(--sec));
+      -webkit-background-clip:text; background-clip:text; color:transparent; filter:var(--glow);
+      letter-spacing:1px;
+    }
+    .subtitle{color:var(--muted); max-width:900px; margin:0 auto; font-size: clamp(16px, 2.3vw, 22px)}
+
+    .cta-row{display:flex; gap:12px; justify-content:center; margin-top:26px; flex-wrap:wrap}
+    .btn{
+      padding:14px 18px; border-radius:999px; border:var(--border); background:var(--card);
+      font-weight:700; letter-spacing:.4px; text-decoration:none; color:var(--fg);
+      position:relative; overflow:hidden; isolation:isolate;
+    }
+    .btn .shine{position:absolute; inset:-200% 50% auto auto; width:40%; aspect-ratio:1/1; background:radial-gradient(circle, rgba(255,255,255,.6), transparent 60%); transform:rotate(25deg); animation: sweep 3.2s linear infinite}
+    @keyframes sweep{to{transform:translateX(-600%) rotate(25deg)}}
+
+    /* Sections */
+    section{padding:80px 18px}
+    .wrap{max-width:1200px; margin:0 auto}
+
+    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin-top:24px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border:var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:18px; position:relative; overflow:hidden; transform-style:preserve-3d; perspective:1000px;
+      transition: transform .15s ease;
+    }
+    .card:hover{transform:translateY(-4px)}
+    .card h3{margin:2px 0 6px}
+    .card p{color:var(--muted)}
+    .tag{display:inline-block; font-family:"JetBrains Mono",monospace; font-size:12px; opacity:.8; border:var(--border); padding:4px 8px; border-radius:999px}
+
+    /* Code block */
+    pre{margin:0; padding:14px; background:rgba(0,0,0,.25); border-radius:14px; overflow:auto; border:var(--border)}
+    code{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+
+    /* Footer */
+    footer{padding:60px 20px; text-align:center; color:var(--muted)}
+
+    /* Cursor ring */
+    .ring{ position:fixed; width:28px; height:28px; border:2px solid rgba(255,255,255,.6); border-radius:50%; pointer-events:none; mix-blend-mode:difference; transform:translate(-50%,-50%); transition: transform .07s linear; z-index:9999 }
+
+    /* Magnetic */
+    .mag{display:inline-flex; align-items:center; gap:10px}
+
+    /* Rainbow (Easter egg) */
+    @keyframes hue{to{filter:hue-rotate(360deg)}}
+    .rainbow{animation:hue 6s linear infinite}
+
+    /* Scrollbar subtle */
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg, var(--pri), var(--sec)); border-radius:999px}
+  </style>
+</head>
+<body>
+  <div class="bg-grad" aria-hidden="true"></div>
+  <canvas id="stars"></canvas>
+
+  <nav class="nav">
+    <a href="#demo">Live Demo</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#code">Code</a>
+    <button id="theme">Toggle Theme</button>
+  </nav>
+
+  <header>
+    <span class="badge">🛠️ Built with pure HTML/CSS/JS • no libraries</span>
+    <h1 class="title">Hello Mam 👋 — enjoy this HyperShowcase</h1>
+    <p class="subtitle">A single-file mini app packed with a particle universe, glassmorphism, 3D tilt, magnetic buttons, custom cursor, theme toggle, confetti, and a cheeky Easter egg. Scroll down or hit <strong>M</strong> for magic.</p>
+    <div class="cta-row">
+      <a class="btn mag" href="#demo"><span class="shine"></span>🚀 See it move</a>
+      <a class="btn mag" href="#code"><span class="shine"></span>📄 View the code</a>
+    </div>
+  </header>
+
+  <section id="demo">
+    <div class="wrap">
+      <h2>Interactive Demos</h2>
+      <div class="grid">
+        <article class="card tilt">
+          <span class="tag">3D Tilt</span>
+          <h3>Parallax Card</h3>
+          <p>Hover and move your mouse around. The card reacts in 3D and the highlight follows your cursor.</p>
+          <div class="spot" aria-hidden="true"></div>
+        </article>
+        <article class="card">
+          <span class="tag">Magnet + Cursor</span>
+          <h3>Magnetic Buttons</h3>
+          <p>Buttons gently chase your cursor for a premium micro‑interaction feel.</p>
+          <div style="display:flex; gap:12px; margin-top:10px">
+            <button class="btn mag">Primary</button>
+            <button class="btn mag">Secondary</button>
+          </div>
+        </article>
+        <article class="card">
+          <span class="tag">Konami</span>
+          <h3>Easter Egg</h3>
+          <p>Type ↑ ↑ ↓ ↓ ← → ← → B A to unlock <em>Rainbow Mode</em>. Press <strong>M</strong> anytime for confetti.</p>
+          <canvas id="confetti" style="width:100%; height:120px; display:block; border-radius:14px; border:var(--border)"></canvas>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <div class="wrap">
+      <h2>Gallery</h2>
+      <div class="grid">
+        <article class="card tilt">
+          <h3>Neon Glass</h3>
+          <p>Aesthetic glass cards with soft shadows and neon glows.</p>
+          <div class="spot" aria-hidden="true"></div>
+        </article>
+        <article class="card tilt">
+          <h3>Starfield</h3>
+          <p>Procedural canvas stars with drifting parallax.</p>
+          <div class="spot" aria-hidden="true"></div>
+        </article>
+        <article class="card tilt">
+          <h3>Smooth Scroll</h3>
+          <p>Custom navbar & smooth section transitions.</p>
+          <div class="spot" aria-hidden="true"></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="code">
+    <div class="wrap">
+      <h2>How it works (tiny snippet)</h2>
+      <p class="subtitle">No frameworks. Just DOM + Canvas + a few CSS tricks.</p>
+      <pre><code>// 3D tilt: map mouse to rotation
+card.addEventListener('mousemove', (e) => {
+  const r = card.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width;   // 0..1
+  const y = (e.clientY - r.top) / r.height;   // 0..1
+  card.style.transform = `rotateX(${(0.5-y)*10}deg) rotateY(${(x-0.5)*12}deg)`;
+});
+      </code></pre>
+    </div>
+  </section>
+
+  <footer>
+    Made with ♥ by <strong>YOU</strong>. Tip: tell mam you implemented <em>parallax canvas, glassmorphism, custom cursor ring, magnetic buttons, 3D tilt, theme toggle, confetti, and a Konami-code Easter egg</em> in a single HTML file.
+  </footer>
+
+  <div class="ring" aria-hidden="true"></div>
+
+  <script>
+    // ===== Smooth scroll =====
+    document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+      e.preventDefault(); document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth'});
+    }));
+
+    // ===== Theme toggle =====
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('theme');
+    themeBtn.addEventListener('click', ()=>{
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? 'dark' : 'light');
+      themeBtn.textContent = light ? 'Toggle Theme' : 'Go Dark';
+    });
+
+    // ===== Custom cursor ring + magnet =====
+    const ring = document.querySelector('.ring');
+    let rx=0, ry=0;
+    window.addEventListener('mousemove', e=>{ rx = e.clientX; ry = e.clientY; ring.style.transform = `translate(${rx}px, ${ry}px)`; });
+
+    const magnets = document.querySelectorAll('.mag');
+    magnets.forEach(m => {
+      m.addEventListener('mousemove', e => {
+        const r = m.getBoundingClientRect();
+        const x = e.clientX - (r.left + r.width/2);
+        const y = e.clientY - (r.top + r.height/2);
+        m.style.transform = `translate(${x*0.08}px, ${y*0.08}px)`;
+      });
+      m.addEventListener('mouseleave', () => m.style.transform = 'translate(0,0)');
+    });
+
+    // ===== 3D Tilt cards with spotlight =====
+    const tilts = document.querySelectorAll('.tilt');
+    tilts.forEach(card => {
+      const spot = card.querySelector('.spot');
+      Object.assign(spot.style, {position:'absolute', inset:'-40%', background:'radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,.25), transparent 60%)', pointerEvents:'none'});
+      card.addEventListener('mousemove', (e)=>{
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;   // 0..1
+        const y = (e.clientY - r.top) / r.height;   // 0..1
+        card.style.transform = `translateY(-4px) rotateX(${(0.5-y)*10}deg) rotateY(${(x-0.5)*14}deg)`;
+        spot.style.setProperty('--mx', `${x*100}%`);
+        spot.style.setProperty('--my', `${y*100}%`);
+      });
+      card.addEventListener('mouseleave', ()=>{ card.style.transform='translateY(0)'; });
+    });
+
+    // ===== Starfield background (parallax drift) =====
+    const starCanvas = document.getElementById('stars');
+    const sctx = starCanvas.getContext('2d');
+    let stars=[]; let w=0,h=0; let t=0; let mouse={x:0,y:0};
+    const DPR = Math.max(1, Math.min(2, window.devicePixelRatio||1));
+
+    function resize(){
+      w = starCanvas.width = innerWidth * DPR;
+      h = starCanvas.height = innerHeight * DPR;
+      starCanvas.style.width = innerWidth+'px';
+      starCanvas.style.height = innerHeight+'px';
+      sctx.setTransform(DPR,0,0,DPR,0,0);
+      const count = Math.floor((innerWidth*innerHeight)/9000);
+      stars = Array.from({length:count}, ()=>({
+        x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+        z: Math.random()*2+0.6, tw: Math.random()*0.6+0.4
+      }));
+    }
+    window.addEventListener('resize', resize); resize();
+    window.addEventListener('mousemove', e=>{mouse.x=e.clientX; mouse.y=e.clientY});
+
+    function loop(){
+      t += 0.006; sctx.clearRect(0,0,innerWidth,innerHeight);
+      for(const s of stars){
+        const dx = (mouse.x/innerWidth - .5) * s.z * 10;
+        const dy = (mouse.y/innerHeight - .5) * s.z * 10;
+        const x = s.x + Math.sin(t + s.x*0.01)*2 - dx;
+        const y = s.y + Math.cos(t + s.y*0.01)*2 - dy;
+        const a = (Math.sin(t*4 + s.x*0.02)+1)/2 * s.tw + 0.2;
+        sctx.beginPath(); sctx.arc(x, y, s.z, 0, Math.PI*2);
+        sctx.fillStyle = `rgba(255,255,255,${a})`; sctx.fill();
+      }
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    // ===== Confetti (tiny implementation) =====
+    const c = document.getElementById('confetti');
+    const ctx = c.getContext('2d');
+    function sizeConf(){ c.width = c.clientWidth; c.height = c.clientHeight; }
+    new ResizeObserver(sizeConf).observe(c); sizeConf();
+    let confetti=[]; function burst(){
+      const n=120; const cx=c.width/2, cy=c.height/2;
+      for(let i=0;i<n;i++){
+        const a=Math.random()*Math.PI*2; const sp=2+Math.random()*5;
+        confetti.push({x:cx,y:cy, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, r:2+Math.random()*3, life:70+Math.random()*50});
+      }
+    }
+    function tick(){
+      ctx.clearRect(0,0,c.width,c.height);
+      confetti = confetti.filter(p=>p.life>0);
+      confetti.forEach(p=>{
+        p.x+=p.vx; p.y+=p.vy; p.vy+=0.08; p.vx*=0.995; p.vy*=0.995; p.life--;
+        ctx.globalAlpha=Math.max(0,p.life/120);
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+      });
+      requestAnimationFrame(tick);
+    }
+    tick();
+    // Keyboard shortcut: M = burst
+    document.addEventListener('keydown', e=>{ if(e.key.toLowerCase()==='m'){ burst(); } });
+
+    // ===== Konami Code → Rainbow Mode =====
+    const keys = [];
+    const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    window.addEventListener('keydown', e=>{
+      keys.push(e.key); if(keys.length > KONAMI.length) keys.shift();
+      if(KONAMI.every((k,i)=>k.toLowerCase()===keys[i].toLowerCase())){
+        document.body.classList.toggle('rainbow');
+        burst(); burst();
+      }
+    });
+  </script>
+</body>
+</html>

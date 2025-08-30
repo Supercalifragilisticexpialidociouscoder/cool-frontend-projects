@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HyperShowcase 2.0 — SICK AF Single File Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#071025;--fg:#e6f0ff;--muted:#9fb3d6;--accent1:#ff4dd2;--accent2:#00f0ff}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:"Space Grotesk",system-ui;background:radial-gradient(800px 400px at 10% 10%, rgba(124,77,255,.12), transparent), var(--bg);color:var(--fg)}
+.wrap{max-width:1200px;margin:0 auto;padding:32px}
+.header{display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;gap:12px;align-items:center}
+.logo svg{width:56px;height:56px}
+.title{font-weight:800}
+.subtitle{color:var(--muted);font-size:13px}
+.controls{display:flex;gap:8px}
+.btn{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);cursor:pointer;font-weight:700}
+.btn.alt{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#021426;border:none}
+.hero{display:grid;grid-template-columns:1fr 470px;gap:20px;margin-top:24px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,.04)}
+.preview{height:500px;border-radius:12px;overflow:hidden}
+textarea{width:100%;height:320px;background:rgba(3,8,16,.6);color:var(--fg);border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,.04);font-family:"JetBrains Mono",monospace}
+.cursor{position:fixed;width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.9);pointer-events:none;transform:translate(-50%,-50%)}
+.cube-wrap{perspective:900px;height:200px;display:flex;align-items:center;justify-content:center}
+.cube{width:120px;height:120px;transform-style:preserve-3d}
+.cube div{position:absolute;width:120px;height:120px;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.04)}
+.cube .front{transform:translateZ(60px)}.cube .back{transform:rotateY(180deg) translateZ(60px)}.cube .right{transform:rotateY(90deg) translateZ(60px)}.cube .left{transform:rotateY(-90deg) translateZ(60px)}.cube .top{transform:rotateX(90deg) translateZ(60px)}.cube .bottom{transform:rotateX(-90deg) translateZ(60px)}
+.footer{margin-top:18px;color:var(--muted);text-align:center}
+@media(max-width:1000px){.hero{grid-template-columns:1fr}.preview{height:420px}textarea{height:240px}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="wrap">
+  <header class="header">
+    <div class="logo">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="6" width="108" height="108" rx="20" fill="url(#g)"/></svg>
+      <div>
+        <div class="title">HyperShowcase 2.0</div>
+        <div class="subtitle">Next-level single-file demo — pure HTML/CSS/JS</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn alt" id="runBtn">RUN</button>
+      <button class="btn" id="confettiBtn">CONFETTI</button>
+      <button class="btn" id="micBtn">Mic Viz</button>
+    </div>
+  </header>
+
+  <main class="hero">
+    <section class="card">
+      <strong>Live Playground</strong>
+      <div style="margin-top:8px;color:var(--muted)">Edit HTML/CSS/JS and click RUN — preview is live and sandboxed.</div>
+      <textarea id="codeArea"><!doctype html>
+<html>
+  <body style="margin:0;display:grid;place-items:center;height:100vh;background:linear-gradient(120deg,#021426,#04102a);">
+    <h1 style="color:white;font-family:system-ui">Hi mam — this was made in one file 😎</h1>
+  </body>
+</html></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+        <button class="btn alt" id="inject">Inject</button>
+        <button class="btn" id="download">Download</button>
+        <div style="flex:1"></div>
+        <div style="color:var(--muted);font-size:13px">Size: <span id="size">0</span> bytes</div>
+      </div>
+    </section>
+
+    <aside class="card preview">
+      <div style="position:relative;width:100%;height:100%">
+        <canvas id="mainCanvas" style="position:absolute;inset:0;z-index:0"></canvas>
+        <iframe id="preview" sandbox="allow-scripts allow-modals" style="position:absolute;inset:18px;border-radius:10px;z-index:2;border:none;background:transparent"></iframe>
+        <div style="position:absolute;right:16px;bottom:16px;z-index:4;display:flex;gap:8px">
+          <button class="btn" id="snapshot">Save PNG</button>
+          <button class="btn" id="fullscreen">Full</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <section class="card" style="margin-top:16px;display:flex;gap:16px;align-items:center">
+    <div style="flex:1">
+      <h3 style="margin:0">3D Cube</h3>
+      <div class="cube-wrap">
+        <div class="cube" id="cube"><div class="front">H</div><div class="back">S</div><div class="right">2</div><div class="left">0</div><div class="top">⚡</div><div class="bottom">✨</div></div>
+      </div>
+    </div>
+    <div style="width:340px">
+      <h3 style="margin:0">Tiny Terminal</h3>
+      <div id="term" style="background:rgba(0,0,0,.2);padding:12px;border-radius:10px;color:var(--muted);font-family:JetBrains Mono,monospace;height:150px;overflow:auto">Ready. Click to run a fake command.</div>
+    </div>
+  </section>
+
+  <footer class="footer">Want logo, your name, or a custom color theme? Say the word and I’ll bake it in.</footer>
+</div>
+
+<script>
+// small helpers
+function downloadFile(name,content){const a=document.createElement('a');const blob=new Blob([content],{type:'text/html'});a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1500)}
+// editor
+var codeArea=document.getElementById('codeArea');var preview=document.getElementById('preview');var sizeEl=document.getElementById('size');
+function updateSize(){sizeEl.textContent=new Blob([codeArea.value]).size}
+updateSize();codeArea.addEventListener('input',updateSize);
+function inject(){var html=codeArea.value;var doc=preview.contentWindow.document;doc.open();doc.write(html);doc.close()}
+document.getElementById('inject').onclick=inject;document.getElementById('download').onclick=function(){downloadFile('hyperplayground.html',codeArea.value)}
+// starter load
+if(!localStorage.getItem('hs-loaded')){codeArea.value='<!doctype html>\\n<html>\\n  <body style=\"margin:0;display:grid;place-items:center;height:100vh;background:linear-gradient(120deg,#021426,#04102a);\">\\n    <h1 style=\"color:white;font-family:system-ui\">Hi mam — dynamic demo ✔</h1>\\n  </body>\\n</html>';updateSize();inject();localStorage.setItem('hs-loaded','1')}
+
+// canvas visuals (particles + confetti)
+var canvas=document.getElementById('mainCanvas');var ctx=canvas.getContext('2d');var W=0,H=0;function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px'}window.addEventListener('resize',resize);resize();
+var parts=[];function init(n){parts=[];for(var i=0;i<n;i++){parts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*1.6,vy:(Math.random()-.5)*1.6,r:4+Math.random()*16})}}init(80);
+function draw(){ctx.clearRect(0,0,W,H);var g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'rgba(124,77,255,.06)');g.addColorStop(1,'rgba(0,240,255,.03)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.save();ctx.globalCompositeOperation='lighter';for(var i=0;i<parts.length;i++){var p=parts[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-60)p.x=W+60;if(p.x>W+60)p.x=-60;if(p.y<-60)p.y=H+60;if(p.y>H+60)p.y=-60;var rad=p.r;var grad=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,rad*3);grad.addColorStop(0,'rgba(255,255,255,.9)');grad.addColorStop(.2,'rgba(255,255,255,.2)');grad.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=grad;ctx.beginPath();ctx.arc(p.x,p.y,rad*2,0,Math.PI*2);ctx.fill()}ctx.restore();requestAnimationFrame(draw)}draw();
+
+// confetti
+var confetti=[];function burst(){var cx=W/2,cy=H/2;for(var i=0;i<140;i++){var a=Math.random()*Math.PI*2;var s=2+Math.random()*7;confetti.push({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,r:2+Math.random()*6,c:i%2? '#ff4dd2':'#00f0ff',life:110})}spin()}function spin(){for(var i=confetti.length-1;i>=0;i--){var p=confetti[i];p.vy+=0.12;p.x+=p.vx;p.y+=p.vy;p.life--;ctx.fillStyle=p.c;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r,p.r*1.6,0,0,Math.PI*2);ctx.fill();if(p.life<=0)confetti.splice(i,1)}if(confetti.length)requestAnimationFrame(spin)}document.getElementById('confettiBtn').onclick=burst;document.addEventListener('keydown',function(e){if(e.key.toLowerCase()==='m')burst()});
+
+// mic visualizer (simple)
+var audioCtx,analyser,dataArr;document.getElementById('micBtn').onclick=async function(){if(audioCtx){audioCtx.close();audioCtx=null;this.textContent='Mic Viz';return}try{var s=await navigator.mediaDevices.getUserMedia({audio:true});audioCtx=new (window.AudioContext||window.webkitAudioContext)();var src=audioCtx.createMediaStreamSource(s);analyser=audioCtx.createAnalyser();analyser.fftSize=256;src.connect(analyser);dataArr=new Uint8Array(analyser.frequencyBinCount);viz();this.textContent='Stop Mic'}catch(err){alert('Mic access denied')}};function viz(){if(!analyser)return;analyser.getByteFrequencyData(dataArr);var step=Math.ceil(dataArr.length/40);var barW=(W-60)/40;ctx.save();ctx.translate(30,H-120);for(var i=0;i<40;i++){var v=dataArr[i*step]/255;var h=v*100;ctx.fillStyle='rgba(255,255,255,'+(0.06+v*0.9)+')';ctx.fillRect(i*(barW+4),-h,barW,h)}ctx.restore();requestAnimationFrame(viz)}
+
+// cube mouse
+var cube=document.getElementById('cube');document.addEventListener('mousemove',function(e){var cx=innerWidth/2,cy=innerHeight/2;var dx=(e.clientX-cx)/cx,dy=(e.clientY-cy)/cy;cube.style.transform='rotateX('+ (dy*12) +'deg) rotateY('+ (dx*18) +'deg)';document.getElementById('cursor').style.transform='translate('+e.clientX+'px,'+e.clientY+'px)';});
+
+// tiny terminal
+var term=document.getElementById('term');term.addEventListener('click',function(){var t=prompt('Run command','echo \"Wow mam\"');if(t){term.textContent += '\n> '+t+'\n'+(t.indexOf('echo')!==-1? t.replace(/echo\\s+\"?|\"?/g,'') : 'command not found')}term.scrollTop=term.scrollHeight});
+
+// snapshot
+document.getElementById('snapshot').onclick=function(){var tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;var tc=tmp.getContext('2d');tc.drawImage(canvas,0,0);var data=tmp.toDataURL('image/png');var a=document.createElement('a');a.href=data;a.download='hypershot.png';a.click()}
+// fullscreen
+document.getElementById('fullscreen').onclick=function(){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}
+// run button
+document.getElementById('runBtn').onclick=function(){inject();var a=this;a.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:260})}
+// fps
+var last=performance.now(),frames=0;function fpsTick(){var now=performance.now();frames++;if(now-last>=1000){var fps=Math.round(frames/((now-last)/1000));document.getElementById('size').textContent=fps+' fps';last=now;frames=0}requestAnimationFrame(fpsTick)}fpsTick();
+</script>
+</body>
+</html>
